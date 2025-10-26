@@ -19,7 +19,7 @@ void FCFS(Process *p, int len){
     tat += p[0].tat;
     tct += p[0].burst;
 
-    for(int i=0; i<len; i++){
+    for(int i=1; i<len; i++){
         p[i].wt = tct - p[i].at;
         p[i].ct = tct + p[i].burst;
         p[i].tat = p[i].ct - p[i].at;
