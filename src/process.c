@@ -35,8 +35,14 @@ bool cmp_by_at(Process *arr1, Process *arr2, int e){
     }
 }
 
-bool cmp_by_prt(Process *arr1, Process *arr2){
-    return arr1->priority <= arr2->priority;
+bool cmp_by_prt(Process *arr1, Process *arr2, int e){
+    switch (e)
+    {
+    case 1:
+        return arr1->priority - arr2->priority == 0;
+    default:
+        return arr1->priority - arr2->priority <= 0;
+    }
 }
 
 #endif

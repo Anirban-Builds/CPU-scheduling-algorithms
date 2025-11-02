@@ -43,7 +43,7 @@ void merge(Process *arr, int left, int mid, int right,
 }
 
 void merge_sort(Process *arr, int left, int right,
-                 int (*f)(Process *a, Process *b)){
+                 int (*f)(Process *a, Process *b, int e)){
     int mid;
 
     if(left< right){
@@ -54,22 +54,6 @@ void merge_sort(Process *arr, int left, int right,
 
         merge(arr, left, mid, right, f);
     }
-}
-
-void tie_braker(Process *pr, int len,
- int (*f)(Process *a, Process *b)){
-    int left = 0;
-    int right = 0;
-    while (right<len){
-        if(cmp_by_at(&pr[left], &pr[right], 1)){
-            right++;
-        }
-        else{
-            merge_sort(pr, left, right-1, f);
-            left = right;
-        }
-    }
-    merge_sort(pr, left, right-1, f);
 }
 
 #endif
