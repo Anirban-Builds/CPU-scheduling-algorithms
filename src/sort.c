@@ -2,16 +2,16 @@
 #define _SORT_
 #include "process.c"
 
-void merge(Process *arr, int left, int mid, int right){
+void merge(int *arr, int left, int mid, int right){
     int lIdx = left;
     int rIdx = mid+1;
 
     //temp arr
-    Process *sortArr = (Process *)malloc(sizeof(Process)*(right+1));
+    int *sortArr = (int *)malloc(sizeof(int)*(right+1));
     int idx = left;
 
     while(lIdx <=mid && rIdx <=right){
-        if(arr[lIdx].at <= arr[rIdx].at){
+        if(arr[lIdx] <= arr[rIdx]){
             sortArr[idx++] = arr[lIdx++];
         }
         else{
@@ -41,7 +41,7 @@ void merge(Process *arr, int left, int mid, int right){
     free(sortArr); // free temp array
 }
 
-void merge_sort(Process *arr, int left, int right){
+void merge_sort(int *arr, int left, int right){
     int mid;
 
     if(left< right){
