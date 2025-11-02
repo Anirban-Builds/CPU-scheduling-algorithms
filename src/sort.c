@@ -43,7 +43,7 @@ void merge(Process *arr, int left, int mid, int right,
 }
 
 void merge_sort(Process *arr, int left, int right,
-                 int (*f)(Process *a, Process *b, int e)){
+                 bool (*f)(Process *a, Process *b, int e)){
     int mid;
 
     if(left< right){
