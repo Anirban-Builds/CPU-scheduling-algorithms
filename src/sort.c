@@ -3,7 +3,7 @@
 #include "process.c"
 
 void merge(Process *arr, int left, int mid, int right,
-            int (*f)(Process *a, Process *b, int e)){
+            bool (*f)(Process *a, Process *b, int e)){
     int lIdx = left;
     int rIdx = mid+1;
 
