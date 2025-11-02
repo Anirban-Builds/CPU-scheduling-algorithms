@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct{
 int id;
@@ -22,6 +23,20 @@ void process_init(Process *p, int len){
         p[i].ct = 0;
         p[i].rt = 0;
     }
+}
+
+bool cmp_by_at(Process *arr1, Process *arr2, int e){
+    switch (e)
+    {
+    case 1:
+        return arr1->at - arr2->at == 0;
+    default:
+        return arr1->at - arr2->at <= 0;
+    }
+}
+
+bool cmp_by_prt(Process *arr1, Process *arr2){
+    return arr1->priority <= arr2->priority;
 }
 
 #endif

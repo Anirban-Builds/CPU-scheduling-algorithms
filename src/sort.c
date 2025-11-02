@@ -2,16 +2,17 @@
 #define _SORT_
 #include "process.c"
 
-void merge(int *arr, int left, int mid, int right){
+void merge(Process *arr, int left, int mid, int right,
+            int (*f)(Process *a, Process *b, int e)){
     int lIdx = left;
     int rIdx = mid+1;
 
     //temp arr
-    int *sortArr = (int *)malloc(sizeof(int)*(right+1));
+    Process *sortArr = (Process *)malloc(sizeof(Process)*(right+1));
     int idx = left;
 
     while(lIdx <=mid && rIdx <=right){
-        if(arr[lIdx] <= arr[rIdx]){
+        if(f(&arr[lIdx], &arr[rIdx], -1)){
             sortArr[idx++] = arr[lIdx++];
         }
         else{
@@ -41,33 +42,34 @@ void merge(int *arr, int left, int mid, int right){
     free(sortArr); // free temp array
 }
 
-void merge_sort(int *arr, int left, int right){
+void merge_sort(Process *arr, int left, int right,
+                 int (*f)(Process *a, Process *b)){
     int mid;
 
     if(left< right){
         mid = (left + right) >> 1;
 
-        merge_sort(arr, left, mid);
-        merge_sort(arr, mid+1, right);
+        merge_sort(arr, left, mid, f);
+        merge_sort(arr, mid+1, right, f);
 
-        merge(arr, left, mid, right);
+        merge(arr, left, mid, right, f);
     }
-
 }
 
-void tie_braker(int *arr, int *pr, int len){
+void tie_braker(Process *pr, int len,
+ int (*f)(Process *a, Process *b)){
     int left = 0;
     int right = 0;
     while (right<len){
-        if(arr[right] == arr[left]){
+        if(cmp_by_at(&pr[left], &pr[right], 1)){
             right++;
         }
         else{
-            merge_sort(pr, left, right-1);
+            merge_sort(pr, left, right-1, f);
             left = right;
         }
     }
-    merge_sort(pr, left, right-1);
+    merge_sort(pr, left, right-1, f);
 }
 
 #endif
