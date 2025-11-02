@@ -54,4 +54,20 @@ void merge_sort(Process *arr, int left, int right){
     }
 
 }
+
+void tie_braker(int *arr, int *pr, int len){
+    int left = 0;
+    int right = 0;
+    while (right<len){
+        if(arr[right] == arr[left]){
+            right++;
+        }
+        else{
+            merge_sort(pr, left, right-1);
+            left = right;
+        }
+    }
+    merge_sort(pr, left, right-1);
+}
+
 #endif

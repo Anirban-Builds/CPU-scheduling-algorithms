@@ -9,7 +9,16 @@ void FCFS(Process *p, int len){
     int trt, twt, tat, tct =0;
 
     process_init(p, len);
-    // merge_sort(p, 0, len);
+
+    int at[len];
+    int prts[len];
+
+    for(int i=0; i<len; i++){
+        at[i] = p[i].at;
+        prts[i] = p[i].priority;
+    }
+
+    tie_braker(at, prts, len);
 
     p[0].ct = p[0].burst;
     p[0].tat = p[0].ct - p[0].at;
