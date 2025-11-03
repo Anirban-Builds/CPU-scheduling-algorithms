@@ -22,7 +22,6 @@ void tie_braker_fcfs(Process *pr, int len){
 
 void gantt_chart_queue(Process *p, q *gc, int len){
     int ctr = 0;
-    q *gc = malloc(sizeof(q)*len);
     while(ctr<len){
         gc[ctr].id = p[ctr].id;
         gc[ctr].ct = p[ctr].ct;
