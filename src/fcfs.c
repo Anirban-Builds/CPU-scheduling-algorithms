@@ -29,7 +29,7 @@ void gantt_chart_queue(Process *p, q *gc, int len){
     }
 }
 
-void FCFS(Process *p, q* gcq,int len){
+void FCFS(Process *p, q* gcq, int len){
 
     int trt, twt, tat, tct =0;
 
