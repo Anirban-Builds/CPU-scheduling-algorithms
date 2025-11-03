@@ -16,6 +16,11 @@ int rt;
 int priority;
 }Process;
 
+typedef struct{
+    int id;
+    int ct;
+}q;
+
 void process_init(Process *p, int len){
 
     for(int i=0; i<len; i++){

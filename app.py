@@ -18,6 +18,12 @@ class Process(ctypes.Structure):
         ("priority", ctypes.c_int),
     ]
 
+class Gcq(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_int),
+        ("ct", ctypes.c_int), #elapsed time
+    ]
+
 @app.get("/")
 async def root():
     return {"status": "ok", "message": "Space is running"}
@@ -28,10 +34,11 @@ async def fcfs(ats : List[int] = Body(...),
                prts : List[int] = Body(...)
                ):
     print("here in fcfs")
-    clib.FCFS.argtypes = (ctypes.POINTER(Process), ctypes.c_int)
+    clib.FCFS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Gcq), ctypes.c_int)
     clib.FCFS.restype = None
     n = len(ats)
     arr = (Process*n)()
+    gcq = (Gcq*n)()
 
     for i in range(n):
         arr[i].id = i
@@ -39,9 +46,10 @@ async def fcfs(ats : List[int] = Body(...),
         arr[i].burst = bursts[i]
         arr[i].priority = prts[i]
 
-    clib.call_FCFS(arr, n)
+    clib.call_FCFS(arr, gcq, n)
 
     result = []
+    gcq_ = []
     for p in arr:
         result.append({
             "id": p.id,
@@ -54,4 +62,10 @@ async def fcfs(ats : List[int] = Body(...),
             "rt": p.rt,
         })
 
-    return {"result": result}
+    for p in gcq:
+        gcq_.append({
+            "id" : p.id,
+            "ct" : p.ct
+        })
+
+    return {"result": result, "gcq" : gcq_}

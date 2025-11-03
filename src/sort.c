@@ -8,7 +8,7 @@ void merge(Process *arr, int left, int mid, int right,
     int rIdx = mid+1;
 
     //temp arr
-    Process *sortArr = (Process *)malloc(sizeof(Process)*(right+1));
+    Process *sortArr = malloc(sizeof(Process)*(right+1));
     int idx = left;
 
     while(lIdx <=mid && rIdx <=right){

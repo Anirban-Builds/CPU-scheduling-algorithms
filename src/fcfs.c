@@ -19,7 +19,18 @@ void tie_braker_fcfs(Process *pr, int len){
     merge_sort(pr, left, right-1, cmp_by_prt);
 }
 
-void FCFS(Process *p, int len){
+
+void gantt_chart_queue(Process *p, q *gc, int len){
+    int ctr = 0;
+    q *gc = malloc(sizeof(q)*len);
+    while(ctr<len){
+        gc[ctr].id = p[ctr].id;
+        gc[ctr].ct = p[ctr].ct;
+        ctr++;
+    }
+}
+
+void FCFS(Process *p, q* gcq,int len){
 
     int trt, twt, tat, tct =0;
 
@@ -46,6 +57,8 @@ void FCFS(Process *p, int len){
         twt += p[i].wt;
         trt += p[i].rt;
     }
+
+    gantt_chart_queue(p, gcq, len);
 }
 
 #endif
