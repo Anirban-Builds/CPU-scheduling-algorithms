@@ -1,7 +1,8 @@
 #ifndef _FCFS_
 #define _FCFS_
-#include "process.c"
-#include "sort.c"
+#include "../process.c"
+#include "../sort.c"
+#include "../vector.c"
 #include <stdio.h>
 
 void tie_braker_fcfs(Process *pr, int len){
@@ -19,19 +20,9 @@ void tie_braker_fcfs(Process *pr, int len){
     merge_sort(pr, left, right-1, cmp_by_prt);
 }
 
+void FCFS(Process *p, Vector *v, int len){
 
-void gantt_chart_queue(Process *p, q *gc, int len){
-    int ctr = 0;
-    while(ctr<len){
-        gc[ctr].id = p[ctr].id;
-        gc[ctr].ct = p[ctr].ct;
-        ctr++;
-    }
-}
-
-void FCFS(Process *p, q* gcq, int len){
-
-    int trt, twt, tat, tct =0;
+    int trt, twt, tat, tct = 0;
 
     process_init(p, len);
 
@@ -45,6 +36,8 @@ void FCFS(Process *p, q* gcq, int len){
     tat += p[0].tat;
     tct += p[0].burst;
 
+    push_back(v, (pq){p[0].id, p[0].ct});
+
     for(int i=1; i<len; i++){
         p[i].wt = tct - p[i].at;
         p[i].ct = tct + p[i].burst;
@@ -55,9 +48,9 @@ void FCFS(Process *p, q* gcq, int len){
         tat += p[i].tat;
         twt += p[i].wt;
         trt += p[i].rt;
-    }
 
-    gantt_chart_queue(p, gcq, len);
+        push_back(v, (pq){p[i].id, p[i].ct});
+    }
 }
 
 #endif

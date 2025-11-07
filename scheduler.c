@@ -1,5 +1,5 @@
 #include "scheduler.h"
 
-void call_FCFS(Process *p, q* gcq,int len){
-    FCFS(p, gcq, len);
+void call_FCFS(Process *p, Vector* v, int len){
+    FCFS(p, v, len);
 }

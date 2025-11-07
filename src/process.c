@@ -19,7 +19,7 @@ int priority;
 typedef struct{
     int id;
     int ct;
-}q;
+}pq;
 
 void process_init(Process *p, int len){
 

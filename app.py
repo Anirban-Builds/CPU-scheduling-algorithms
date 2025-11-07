@@ -21,7 +21,14 @@ class Process(ctypes.Structure):
 class Gcq(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_int),
-        ("ct", ctypes.c_int), #elapsed time
+        ("ct", ctypes.c_int),
+    ]
+
+class Vec(ctypes.Structure):
+    _fields_ = [
+        ("data", ctypes.POINTER(Gcq)),
+        ("size", ctypes.c_size_t),
+        ("capacity", ctypes.c_size_t)
     ]
 
 @app.get("/")
@@ -34,11 +41,15 @@ async def fcfs(ats : List[int] = Body(...),
                prts : List[int] = Body(...)
                ):
     print("here in fcfs")
-    clib.FCFS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Gcq), ctypes.c_int)
-    clib.FCFS.restype = None
+    clib.call_FCFS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+    clib.call_FCFS.restype = None
     n = len(ats)
     arr = (Process*n)()
-    gcq = (Gcq*n)()
+
+    clib.create_vector.argtypes = None
+    clib.create_vector.restype = ctypes.POINTER(Vec)
+
+    gcq_ptr = clib.create_vector()
 
     for i in range(n):
         arr[i].id = i
@@ -46,10 +57,15 @@ async def fcfs(ats : List[int] = Body(...),
         arr[i].burst = bursts[i]
         arr[i].priority = prts[i]
 
-    clib.call_FCFS(arr, gcq, n)
+    clib.call_FCFS(arr, gcq_ptr, n)
+
+    v = gcq_ptr.contents
+    gcq = [(v.data[i].id, v.data[i].ct) for i in range(v.size)]
+
+    clib.free_mem.argtypes = [ctypes.POINTER(Vec)]
+    clib.free_mem(gcq_ptr)
 
     result = []
-    gcq_ = []
     for p in arr:
         result.append({
             "id": p.id,
@@ -62,10 +78,4 @@ async def fcfs(ats : List[int] = Body(...),
             "rt": p.rt,
         })
 
-    for p in gcq:
-        gcq_.append({
-            "id" : p.id,
-            "ct" : p.ct
-        })
-
-    return {"result": result, "gcq" : gcq_}
+    return {"result": result, "gcq" : gcq}
