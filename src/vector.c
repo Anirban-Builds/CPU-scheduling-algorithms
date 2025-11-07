@@ -1,3 +1,5 @@
+#ifndef _VECTOR_
+#define _VECTOR_
 #include <stdlib.h>
 #include "process.c"
 
@@ -51,5 +53,6 @@ int vector_is_empty(Vector* v) {
     return v->size == 0;
 }
 
+#endif
 
 
