@@ -3,11 +3,9 @@
 #include "../process.c"
 #include "../sort.c"
 #include "../vector.c"
-#include <stdio.h>
 
-void tie_braker_fcfs(Process *pr, int len){
-    int left = 0;
-    int right = 0;
+void tie_braker_fcfs(Process *pr, int len, int left){
+    int right = left;
     while (right<len){
         if(pr[left].at == pr[right].at){
             right++;
@@ -21,12 +19,11 @@ void tie_braker_fcfs(Process *pr, int len){
 }
 
 void FCFS(Process *p, Vector *v, int len){
-
-    int trt, twt, tat, tct = 0;
+    int trt = 0, twt = 0, tat = 0, tct = 0;
 
     process_init(p, len);
 
-    tie_braker_fcfs(p, len);
+    tie_braker_fcfs(p, len, 0);
 
     p[0].ct = p[0].burst;
     p[0].tat = p[0].ct - p[0].at;
@@ -35,6 +32,8 @@ void FCFS(Process *p, Vector *v, int len){
     twt += p[0].wt;
     tat += p[0].tat;
     tct += p[0].burst;
+
+    p[0].complete = true;
 
     push_back(v, (pq){p[0].id, p[0].ct});
 
@@ -48,6 +47,8 @@ void FCFS(Process *p, Vector *v, int len){
         tat += p[i].tat;
         twt += p[i].wt;
         trt += p[i].rt;
+
+        p[i].complete = true;
 
         push_back(v, (pq){p[i].id, p[i].ct});
     }
