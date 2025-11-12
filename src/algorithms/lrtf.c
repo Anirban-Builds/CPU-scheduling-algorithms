@@ -19,9 +19,8 @@ void LRTF(Process *p, Vector *v, int len){
         merge_sort(p, left, ctr-1, cmp_by_burst);
         tie_braker_sjf(p, ctr, left);
         rev(p, ctr); // reverse srtf array
-        while(p[left].complete) left++;
         if(p[left].id != curr_id) {
-            push_back(v, (pq){curr_id, tct});
+            if(!p[curr_id].complete) push_back(v, (pq){curr_id, tct});
             curr_id = p[left].id;
         }
         p[left].burst--;
@@ -40,6 +39,7 @@ void LRTF(Process *p, Vector *v, int len){
             p[left].rt = tct - 1 -p[left].at;
             trt+= p[left].rt;
         }}
+        while(p[left].complete) left++;
     }
     for(int i=0; i<len; i++) p[i].burst = arr[i];
 }

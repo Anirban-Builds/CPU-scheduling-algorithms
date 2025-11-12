@@ -2,7 +2,6 @@ import ctypes
 from typing import List
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
-import json
 
 app = FastAPI(title="cpu-scheduler-app")
 app.add_middleware(
@@ -144,7 +143,6 @@ async def sjf(ats : List[int] = Body(...),
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
-
     return {"result": result, "gcq" : gcq}
 
 @app.post("/ljf")

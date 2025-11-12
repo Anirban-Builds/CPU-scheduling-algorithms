@@ -30,8 +30,6 @@ void SJF(Process *p, Vector *v, int len){
         merge_sort(p, left, ctr-1, cmp_by_burst);
         tie_braker_sjf(p, ctr, left);
 
-        while(p[left].complete) left++;
-
         tct+=p[left].burst;
 
         p[left].ct = tct;
@@ -46,6 +44,7 @@ void SJF(Process *p, Vector *v, int len){
         p[left].complete = true;
 
         push_back(v, (pq){p[left].id, p[left].ct});
+        while(p[left].complete) left++;
     }
 }
 #endif

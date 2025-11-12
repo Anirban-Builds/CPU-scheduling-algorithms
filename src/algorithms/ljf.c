@@ -19,8 +19,6 @@ void LJF(Process *p, Vector *v, int len){
         tie_braker_sjf(p, ctr, left);
         rev(p, ctr); // reverse sjf array
 
-        while(p[left].complete) left++;
-
         tct+=p[left].burst;
 
         p[left].ct = tct;
@@ -35,6 +33,7 @@ void LJF(Process *p, Vector *v, int len){
         p[left].complete = true;
 
         push_back(v, (pq){p[left].id, p[left].ct});
+        while(p[left].complete) left++;
     }
 }
 #endif

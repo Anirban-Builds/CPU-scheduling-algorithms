@@ -35,9 +35,8 @@ void HRRN(Process *p, Vector *v, int len){
         while(ctr<len && p[ctr].at <= tct) ctr ++;
         merge_sort(p, left, ctr-1, cmp_response_ratio);
         tie_braker_hrrn(p, ctr, left);
-        while(p[left].complete) left++;
         if(p[left].id != curr_id) {
-            push_back(v, (pq){curr_id, tct});
+            if(!p[curr_id].complete) push_back(v, (pq){curr_id, tct});
             curr_id = p[left].id;
         }
         p[left].burst--;
@@ -56,6 +55,7 @@ void HRRN(Process *p, Vector *v, int len){
             p[left].rt = tct - 1 -p[left].at;
             trt+= p[left].rt;
         }}
+        while(p[left].complete) left++;
     }
     for(int i=0; i<len; i++) p[i].burst = arr[i];
 }
