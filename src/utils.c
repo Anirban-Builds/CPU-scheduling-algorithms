@@ -2,9 +2,11 @@
 #define _UTILS_
 #include <stdlib.h>
 #include "process.c"
+#include "vector.c"
 
-void free_mem(void *ptr){
-    free(ptr);
+void free_mem(Vector *v){
+    if(v->data) free(v->data);
+    free(v);
 }
 
 void rev(Process *p, int len){

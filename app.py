@@ -1,10 +1,20 @@
 import ctypes
 from typing import List
 from fastapi import FastAPI, Body
+from fastapi.middleware.cors import CORSMiddleware
+import json
 
 app = FastAPI(title="cpu-scheduler-app")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:8000", "http://localhost:8000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-clib = ctypes.CDLL('./c_file.so')
+# clib = ctypes.CDLL('./c_file.so')
+clib = ctypes.CDLL('./c_file.dll')
 
 class Process(ctypes.Structure):
     _fields_ = [
@@ -16,6 +26,7 @@ class Process(ctypes.Structure):
         ("burst", ctypes.c_int),
         ("rt", ctypes.c_int),
         ("priority", ctypes.c_int),
+        ("complete", ctypes.c_bool)
     ]
 
 class Gcq(ctypes.Structure):
@@ -30,6 +41,40 @@ class Vec(ctypes.Structure):
         ("size", ctypes.c_size_t),
         ("capacity", ctypes.c_size_t)
     ]
+
+clib.create_vector.argtypes = None
+clib.create_vector.restype = ctypes.POINTER(Vec)
+
+clib.free_mem.argtypes = [ctypes.POINTER(Vec)]
+clib.free_mem.restype = None
+
+clib.call_FCFS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_FCFS.restype = None
+
+clib.call_SJF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_SJF.restype = None
+
+clib.call_LJF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_LJF.restype = None
+
+clib.call_SRTF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_SRTF.restype = None
+
+clib.call_LRTF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_LRTF.restype = None
+
+clib.call_NPPS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_NPPS.restype = None
+
+clib.call_PPS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_PPS.restype = None
+
+clib.call_HRRN.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_HRRN.restype = None
+
+clib.call_RR.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
+                               ctypes.c_int, ctypes.c_int)
+clib.call_RR.restype = None
 
 def fill_arr(arr, ats, bursts, prts, n):
     for i in range(n):
@@ -53,15 +98,10 @@ def fill_res(arr):
         })
     return result
 
-def vec():
-    clib.create_vector.argtypes = None
-    clib.create_vector.restype = ctypes.POINTER(Vec)
-
-def fill_vec(gcq_ptr):
+def fill_vec(gcq_ptr, n):
     v = gcq_ptr.contents
-    gcq = [(v.data[i].id, v.data[i].ct) for i in range(v.size)]
-    clib.free_mem.argtypes = [ctypes.POINTER(Vec)]
-    clib.free_mem(gcq_ptr)
+    gcq = [(v.data[i].id, v.data[i].ct) for i in range(n)]
+    # clib.free_mem(gcq_ptr)
     return gcq
 
 @app.get("/")
@@ -74,19 +114,15 @@ async def fcfs(ats : List[int] = Body(...),
                prts : List[int] = Body(...)
                ):
     print("here in fcfs")
-    clib.call_FCFS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
-    clib.call_FCFS.restype = None
     n = len(ats)
     arr = (Process*n)()
 
-    vec()
     gcq_ptr = clib.create_vector()
-
     fill_arr(arr, ats, bursts, prts, n)
 
     clib.call_FCFS(arr, gcq_ptr, n)
 
-    gcq = fill_vec(gcq_ptr)
+    gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
 
     return {"result": result, "gcq" : gcq}
@@ -97,19 +133,16 @@ async def sjf(ats : List[int] = Body(...),
                prts : List[int] = Body(...)
                ):
     print("here in sjf")
-    clib.call_SJF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
-    clib.call_SJF.restype = None
     n = len(ats)
     arr = (Process*n)()
 
-    vec()
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
     clib.call_SJF(arr, gcq_ptr, n)
 
-    gcq = fill_vec(gcq_ptr)
+    gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
 
     return {"result": result, "gcq" : gcq}
@@ -120,19 +153,16 @@ async def ljf(ats : List[int] = Body(...),
                prts : List[int] = Body(...)
                ):
     print("here in ljf")
-    clib.call_LJF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
-    clib.call_LJF.restype = None
     n = len(ats)
     arr = (Process*n)()
 
-    vec()
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
     clib.call_LJF(arr, gcq_ptr, n)
 
-    gcq = fill_vec(gcq_ptr)
+    gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
 
     return {"result": result, "gcq" : gcq}
@@ -143,19 +173,16 @@ async def srtf(ats : List[int] = Body(...),
                prts : List[int] = Body(...)
                ):
     print("here in srtf")
-    clib.call_SRTF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
-    clib.call_SRTF.restype = None
     n = len(ats)
     arr = (Process*n)()
 
-    vec()
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
     clib.call_SRTF(arr, gcq_ptr, n)
 
-    gcq = fill_vec(gcq_ptr)
+    gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
 
     return {"result": result, "gcq" : gcq}
@@ -166,19 +193,16 @@ async def lrtf(ats : List[int] = Body(...),
                prts : List[int] = Body(...)
                ):
     print("here in lrtf")
-    clib.call_LRTF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
-    clib.call_LRTF.restype = None
     n = len(ats)
     arr = (Process*n)()
 
-    vec()
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
     clib.call_LRTF(arr, gcq_ptr, n)
 
-    gcq = fill_vec(gcq_ptr)
+    gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
 
     return {"result": result, "gcq" : gcq}
@@ -189,21 +213,18 @@ async def npps(ats : List[int] = Body(...),
                prts : List[int] = Body(...)
                ):
     print("here in npps")
-    clib.call_NPPS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
-    clib.call_NPPS.restype = None
     n = len(ats)
     arr = (Process*n)()
 
-    vec()
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
     clib.call_NPPS(arr, gcq_ptr, n)
 
-    gcq = fill_vec(gcq_ptr)
+    gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
-
+    print("can serialize?", json.dumps({"result": result, "gcq": gcq}))
     return {"result": result, "gcq" : gcq}
 
 @app.post("/pps")
@@ -212,19 +233,16 @@ async def pps(ats : List[int] = Body(...),
                prts : List[int] = Body(...)
                ):
     print("here in pps")
-    clib.call_PPS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
-    clib.call_PPS.restype = None
     n = len(ats)
     arr = (Process*n)()
 
-    vec()
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
     clib.call_PPS(arr, gcq_ptr, n)
 
-    gcq = fill_vec(gcq_ptr)
+    gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
 
     return {"result": result, "gcq" : gcq}
@@ -235,19 +253,16 @@ async def hrrn(ats : List[int] = Body(...),
                prts : List[int] = Body(...)
                ):
     print("here in hrrn")
-    clib.call_HRRN.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
-    clib.call_HRRN.restype = None
     n = len(ats)
     arr = (Process*n)()
 
-    vec()
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
     clib.call_HRRN(arr, gcq_ptr, n)
 
-    gcq = fill_vec(gcq_ptr)
+    gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
 
     return {"result": result, "gcq" : gcq}
@@ -259,21 +274,16 @@ async def rr(ats : List[int] = Body(...),
                q : int = Body(...)
                ):
     print("here in rr")
-    clib.call_RR.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
-                               ctypes.c_int, ctypes.c_int)
-    clib.call_RR.restype = None
     n = len(ats)
     arr = (Process*n)()
 
-    vec()
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
     clib.call_RR(arr, gcq_ptr, n, q)
 
-    gcq = fill_vec(gcq_ptr)
+    gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
 
     return {"result": result, "gcq" : gcq}
-

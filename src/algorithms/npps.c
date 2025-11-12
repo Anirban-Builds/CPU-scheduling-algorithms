@@ -12,7 +12,7 @@ void NPPS(Process *p, Vector *v, int len){
     int ctr = 1;
     while (left < len){
         while(ctr<len && p[ctr].at <= tct) ctr ++;
-        merge_sort(p, len, ctr-1, cmp_by_prt);
+        merge_sort(p, left, ctr-1, cmp_by_prt);
         // priority guranteed to be unique from FrontEnd
         while(p[left].complete) left++;
 
@@ -31,6 +31,5 @@ void NPPS(Process *p, Vector *v, int len){
 
         push_back(v, (pq){p[left].id, p[left].ct});
     }
-
 }
 #endif
