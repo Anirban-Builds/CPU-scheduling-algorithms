@@ -32,11 +32,11 @@ void RR(Process *p, Vector *v, int len, int q){
         else{
             p[left].burst -= q;
             tct += q;
-            if(p[left].rt == -1) {
-                p[left].rt = tct - q -p[left].at;
-                trt+= p[left].rt;
-            }
             push_back(v, (pq){p[left].id, tct});
+        }
+        if(p[left].rt == -1) {
+            p[left].rt = tct - q -p[left].at;
+            trt+= p[left].rt;
         }
         left = (left+1)%len; //circular queue
     }

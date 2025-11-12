@@ -12,8 +12,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-clib = ctypes.CDLL('./c_file.so')
-# clib = ctypes.CDLL('./c_file.dll')
+# clib = ctypes.CDLL('./c_file.so')
+clib = ctypes.CDLL('./c_file.dll')
 
 class Process(ctypes.Structure):
     _fields_ = [

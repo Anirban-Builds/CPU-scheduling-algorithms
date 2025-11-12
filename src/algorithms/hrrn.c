@@ -50,11 +50,10 @@ void HRRN(Process *p, Vector *v, int len){
             twt += p[left].wt;
             push_back(v, (pq){p[left].id, p[left].ct});
         }
-        else{
-            if(p[left].rt == -1) {
-            p[left].rt = tct - 1 -p[left].at;
-            trt+= p[left].rt;
-        }}
+        if(p[left].rt == -1) {
+        p[left].rt = tct - 1 -p[left].at;
+        trt+= p[left].rt;
+        }
         while(p[left].complete) left++;
     }
     for(int i=0; i<len; i++) p[i].burst = arr[i];
