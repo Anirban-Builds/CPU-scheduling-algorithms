@@ -13,8 +13,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# clib = ctypes.CDLL('./c_file.so')
-clib = ctypes.CDLL('./c_file.dll')
+clib = ctypes.CDLL('./c_file.so')
+# clib = ctypes.CDLL('./c_file.dll')
 
 class Process(ctypes.Structure):
     _fields_ = [
@@ -101,7 +101,7 @@ def fill_res(arr):
 def fill_vec(gcq_ptr, n):
     v = gcq_ptr.contents
     gcq = [(v.data[i].id, v.data[i].ct) for i in range(n)]
-    # clib.free_mem(gcq_ptr)
+    clib.free_mem(gcq_ptr)
     return gcq
 
 @app.get("/")
@@ -224,7 +224,7 @@ async def npps(ats : List[int] = Body(...),
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
-    print("can serialize?", json.dumps({"result": result, "gcq": gcq}))
+
     return {"result": result, "gcq" : gcq}
 
 @app.post("/pps")
