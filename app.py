@@ -12,8 +12,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# clib = ctypes.CDLL('./c_file.so')
-clib = ctypes.CDLL('./c_file.dll')
+clib = ctypes.CDLL('./c_file.so')
+# clib = ctypes.CDLL('./c_file.dll')
 
 class Process(ctypes.Structure):
     _fields_ = [
@@ -47,7 +47,10 @@ clib.create_vector.restype = ctypes.POINTER(Vec)
 clib.free_mem.argtypes = [ctypes.POINTER(Vec)]
 clib.free_mem.restype = None
 
-clib.call_FCFS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_FCFS.argtypes = (ctypes.POINTER(Process),
+                           ctypes.POINTER(Vec),
+                           ctypes.POINTER(ctypes.c_double),
+                           ctypes.c_int)
 clib.call_FCFS.restype = None
 
 clib.call_SJF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
@@ -115,16 +118,18 @@ async def fcfs(ats : List[int] = Body(...),
     print("here in fcfs")
     n = len(ats)
     arr = (Process*n)()
+    avg = (ctypes.c_double*4)()
 
     gcq_ptr = clib.create_vector()
     fill_arr(arr, ats, bursts, prts, n)
 
-    clib.call_FCFS(arr, gcq_ptr, n)
+    clib.call_FCFS(arr, gcq_ptr, avg, n)
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
+    avg_list = [avg[i] for i in range(4)]
 
-    return {"result": result, "gcq" : gcq}
+    return {"result": result, "gcq" : gcq, "avg" : avg_list}
 
 @app.post("/sjf")
 async def sjf(ats : List[int] = Body(...),

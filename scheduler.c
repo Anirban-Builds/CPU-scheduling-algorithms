@@ -1,7 +1,7 @@
 #include "scheduler.h"
 
-void call_FCFS(Process *p, Vector *v, int len){
-    FCFS(p, v, len);
+void call_FCFS(Process *p, Vector *v, double *tot,int len){
+    FCFS(p, v, tot, len);
 }
 
 void call_SJF(Process *p, Vector *v, int len){
