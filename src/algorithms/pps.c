@@ -4,7 +4,7 @@
 #include "../sort.c"
 #include "../vector.c"
 
-void PPS(Process *p, Vector *v, int len){
+void PPS(Process *p, Vector *v, double *tot, int len){
     int trt = 0, twt = 0, tat = 0, tct = 0;
 
     process_init(p, len);
@@ -37,6 +37,10 @@ void PPS(Process *p, Vector *v, int len){
         }
         while(p[left].complete) left++;
     }
+    tot[0] = (double)tct/len;
+    tot[1] = (double)twt/len;
+    tot[2] = (double)trt/len;
+    tot[3] = (double)tat/len;
     for(int i=0; i<len; i++) p[i].burst = arr[i];
 }
 #endif

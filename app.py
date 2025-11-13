@@ -47,35 +47,49 @@ clib.create_vector.restype = ctypes.POINTER(Vec)
 clib.free_mem.argtypes = [ctypes.POINTER(Vec)]
 clib.free_mem.restype = None
 
-clib.call_FCFS.argtypes = (ctypes.POINTER(Process),
-                           ctypes.POINTER(Vec),
+clib.call_FCFS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
                            ctypes.POINTER(ctypes.c_double),
                            ctypes.c_int)
 clib.call_FCFS.restype = None
 
-clib.call_SJF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_SJF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
+                          ctypes.POINTER(ctypes.c_double),
+                          ctypes.c_int)
 clib.call_SJF.restype = None
 
-clib.call_LJF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_LJF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
+                          ctypes.POINTER(ctypes.c_double),
+                          ctypes.c_int)
 clib.call_LJF.restype = None
 
-clib.call_SRTF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_SRTF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
+                           ctypes.POINTER(ctypes.c_double),
+                           ctypes.c_int)
 clib.call_SRTF.restype = None
 
-clib.call_LRTF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_LRTF.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
+                           ctypes.POINTER(ctypes.c_double),
+                           ctypes.c_int)
 clib.call_LRTF.restype = None
 
-clib.call_NPPS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_NPPS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
+                           ctypes.POINTER(ctypes.c_double),
+                           ctypes.c_int)
 clib.call_NPPS.restype = None
 
-clib.call_PPS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_PPS.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
+                          ctypes.POINTER(ctypes.c_double),
+                          ctypes.c_int)
 clib.call_PPS.restype = None
 
-clib.call_HRRN.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec), ctypes.c_int)
+clib.call_HRRN.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
+                           ctypes.POINTER(ctypes.c_double),
+                           ctypes.c_int)
 clib.call_HRRN.restype = None
 
 clib.call_RR.argtypes = (ctypes.POINTER(Process), ctypes.POINTER(Vec),
-                               ctypes.c_int, ctypes.c_int)
+                         ctypes.POINTER(ctypes.c_double),
+                         ctypes.c_int, ctypes.c_int)
 clib.call_RR.restype = None
 
 def fill_arr(arr, ats, bursts, prts, n):
@@ -139,16 +153,19 @@ async def sjf(ats : List[int] = Body(...),
     print("here in sjf")
     n = len(ats)
     arr = (Process*n)()
+    avg = (ctypes.c_double*4)()
 
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
-    clib.call_SJF(arr, gcq_ptr, n)
+    clib.call_SJF(arr, gcq_ptr, avg, n)
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
-    return {"result": result, "gcq" : gcq}
+    avg_list = [avg[i] for i in range(4)]
+
+    return {"result": result, "gcq" : gcq, "avg" : avg_list}
 
 @app.post("/ljf")
 async def ljf(ats : List[int] = Body(...),
@@ -158,17 +175,19 @@ async def ljf(ats : List[int] = Body(...),
     print("here in ljf")
     n = len(ats)
     arr = (Process*n)()
+    avg = (ctypes.c_double*4)()
 
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
-    clib.call_LJF(arr, gcq_ptr, n)
+    clib.call_LJF(arr, gcq_ptr, avg, n)
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
+    avg_list = [avg[i] for i in range(4)]
 
-    return {"result": result, "gcq" : gcq}
+    return {"result": result, "gcq" : gcq, "avg" : avg_list}
 
 @app.post("/srtf")
 async def srtf(ats : List[int] = Body(...),
@@ -178,17 +197,19 @@ async def srtf(ats : List[int] = Body(...),
     print("here in srtf")
     n = len(ats)
     arr = (Process*n)()
+    avg = (ctypes.c_double*4)()
 
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
-    clib.call_SRTF(arr, gcq_ptr, n)
+    clib.call_SRTF(arr, gcq_ptr, avg, n)
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
+    avg_list = [avg[i] for i in range(4)]
 
-    return {"result": result, "gcq" : gcq}
+    return {"result": result, "gcq" : gcq, "avg" : avg_list}
 
 @app.post("/lrtf")
 async def lrtf(ats : List[int] = Body(...),
@@ -198,17 +219,19 @@ async def lrtf(ats : List[int] = Body(...),
     print("here in lrtf")
     n = len(ats)
     arr = (Process*n)()
+    avg = (ctypes.c_double*4)()
 
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
-    clib.call_LRTF(arr, gcq_ptr, n)
+    clib.call_LRTF(arr, gcq_ptr, avg, n)
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
+    avg_list = [avg[i] for i in range(4)]
 
-    return {"result": result, "gcq" : gcq}
+    return {"result": result, "gcq" : gcq, "avg" : avg_list}
 
 @app.post("/npps")
 async def npps(ats : List[int] = Body(...),
@@ -218,17 +241,19 @@ async def npps(ats : List[int] = Body(...),
     print("here in npps")
     n = len(ats)
     arr = (Process*n)()
+    avg = (ctypes.c_double*4)()
 
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
-    clib.call_NPPS(arr, gcq_ptr, n)
+    clib.call_NPPS(arr, gcq_ptr, avg, n)
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
+    avg_list = [avg[i] for i in range(4)]
 
-    return {"result": result, "gcq" : gcq}
+    return {"result": result, "gcq" : gcq, "avg" : avg_list}
 
 @app.post("/pps")
 async def pps(ats : List[int] = Body(...),
@@ -238,17 +263,19 @@ async def pps(ats : List[int] = Body(...),
     print("here in pps")
     n = len(ats)
     arr = (Process*n)()
+    avg = (ctypes.c_double*4)()
 
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
-    clib.call_PPS(arr, gcq_ptr, n)
+    clib.call_PPS(arr, gcq_ptr, avg, n)
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
+    avg_list = [avg[i] for i in range(4)]
 
-    return {"result": result, "gcq" : gcq}
+    return {"result": result, "gcq" : gcq, "avg" : avg_list}
 
 @app.post("/hrrn")
 async def hrrn(ats : List[int] = Body(...),
@@ -258,17 +285,19 @@ async def hrrn(ats : List[int] = Body(...),
     print("here in hrrn")
     n = len(ats)
     arr = (Process*n)()
+    avg = (ctypes.c_double*4)()
 
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
-    clib.call_HRRN(arr, gcq_ptr, n)
+    clib.call_HRRN(arr, gcq_ptr, avg, n)
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
+    avg_list = [avg[i] for i in range(4)]
 
-    return {"result": result, "gcq" : gcq}
+    return {"result": result, "gcq" : gcq, "avg" : avg_list}
 
 @app.post("/rr")
 async def rr(ats : List[int] = Body(...),
@@ -279,14 +308,16 @@ async def rr(ats : List[int] = Body(...),
     print("here in rr")
     n = len(ats)
     arr = (Process*n)()
+    avg = (ctypes.c_double*4)()
 
     gcq_ptr = clib.create_vector()
 
     fill_arr(arr, ats, bursts, prts, n)
 
-    clib.call_RR(arr, gcq_ptr, n, q)
+    clib.call_RR(arr, gcq_ptr, avg, n, q)
 
     gcq = fill_vec(gcq_ptr, n)
     result = fill_res(arr)
+    avg_list = [avg[i] for i in range(4)]
 
-    return {"result": result, "gcq" : gcq}
+    return {"result": result, "gcq" : gcq, "avg" : avg_list}
