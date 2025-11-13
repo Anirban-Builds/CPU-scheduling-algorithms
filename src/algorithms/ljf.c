@@ -14,10 +14,10 @@ void LJF(Process *p, Vector *v, double *tot, int len){
     int ctr = 1;
     while(left < len){
         while(ctr<len && p[ctr].at <= tct) ctr ++;
-
+        
         merge_sort(p, left, ctr-1, cmp_by_burst);
         tie_braker_sjf(p, ctr, left);
-        rev(p, ctr); // reverse sjf array
+        rev(p, left, ctr); // reverse sjf array
 
         tct+=p[left].burst;
 

@@ -9,13 +9,12 @@ void free_mem(Vector *v){
     free(v);
 }
 
-void rev(Process *p, int len){
-    int left=0;
+void rev(Process *p, int left, int len){
     int right=len-1;
-    while (p[left].burst < p[right].burst){
-        int temp = p[left].burst;
-        p[left].burst = p[right].burst;
-        p[right].burst = temp;
+    while (left < right){
+        Process temp = p[left];
+        p[left] = p[right];
+        p[right] = temp;
         left++;
         right--;
     }
